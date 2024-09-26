@@ -82,9 +82,12 @@ class Client(object):
         bn_key = ['conv1.1.weight', 'conv1.1.bias', 'conv1.1.running_mean', 'conv1.1.running_var', 'conv1.1.num_batches_tracked',
                   'conv2.1.weight', 'conv2.1.bias', 'conv2.1.running_mean', 'conv2.1.running_var', 'conv2.1.num_batches_tracked']
       
-        for key in model.state_dict().keys():
+        for key in self.model.state_dict().keys():
             if key not in bn_key:
-                self.model.state_dict()[key].data.copy_(model.state_dict()[key])
+                if key in model.state_dict():
+                    self.model.state_dict()[key].data.copy_(model.state_dict()[key])
+                else:
+                    pass
 
     def set_parameters(self, model):
         for new_param, old_param in zip(model.parameters(), self.model.parameters()):

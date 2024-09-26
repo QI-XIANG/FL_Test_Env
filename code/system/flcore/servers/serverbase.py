@@ -341,12 +341,14 @@ class Server(object):
         bn_key = ['conv1.1.weight', 'conv1.1.bias', 'conv1.1.running_mean', 'conv1.1.running_var', 'conv1.1.num_batches_tracked',
                   'conv2.1.weight', 'conv2.1.bias', 'conv2.1.running_mean', 'conv2.1.running_var', 'conv2.1.num_batches_tracked']
         
-        
         for key in self.global_model.state_dict().keys():
             if key not in bn_key:
                 temp = torch.zeros_like(self.global_model.state_dict()[key], dtype=torch.float32)
                 for weight, model in zip(clients_weight, self.uploaded_models):
-                    temp += weight * model.state_dict()[key]
+                    if key in model.state_dict():
+                        temp += weight * model.state_dict()[key]
+                    else:
+                        pass
                 self.global_model.state_dict()[key].data.copy_(temp)
 
     def aggregate_parameters(self, clients_weight):

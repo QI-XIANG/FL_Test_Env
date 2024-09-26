@@ -59,24 +59,26 @@ class Digit5CNN(nn.Module):
         super(Digit5CNN, self).__init__()
         self.encoder = nn.Sequential()
         self.encoder.add_module("conv1", nn.Conv2d(3, 64, kernel_size=5, stride=1, padding=2))
-        self.encoder.add_module("bn1", nn.BatchNorm2d(64))
+        self.encoder.add_module("gn1", nn.GroupNorm(8, 64))  # Changed to GroupNorm
         self.encoder.add_module("relu1", nn.ReLU())
-        self.encoder.add_module("maxpool1", nn.MaxPool2d(kernel_size=3, stride=2, padding=1, ceil_mode=False))
+        self.encoder.add_module("maxpool1", nn.MaxPool2d(kernel_size=3, stride=2, padding=1))
+
         self.encoder.add_module("conv2", nn.Conv2d(64, 64, kernel_size=5, stride=1, padding=2))
-        self.encoder.add_module("bn2", nn.BatchNorm2d(64))
+        self.encoder.add_module("gn2", nn.GroupNorm(8, 64))  # Changed to GroupNorm
         self.encoder.add_module("relu2", nn.ReLU())
-        self.encoder.add_module("maxpool2", nn.MaxPool2d(kernel_size=3, stride=2, padding=1, ceil_mode=False))
+        self.encoder.add_module("maxpool2", nn.MaxPool2d(kernel_size=3, stride=2, padding=1))
+
         self.encoder.add_module("conv3", nn.Conv2d(64, 128, kernel_size=5, stride=1, padding=2))
-        self.encoder.add_module("bn3", nn.BatchNorm2d(128))
+        self.encoder.add_module("gn3", nn.GroupNorm(8, 128))  # Changed to GroupNorm
         self.encoder.add_module("relu3", nn.ReLU())
 
         self.linear = nn.Sequential()
         self.linear.add_module("fc1", nn.Linear(8192, 3072))
-        self.linear.add_module("bn4", nn.BatchNorm1d(3072))
+        self.linear.add_module("gn4", nn.GroupNorm(8, 3072))  # Changed to GroupNorm
         self.linear.add_module("relu4", nn.ReLU())
         self.linear.add_module("dropout", nn.Dropout())
         self.linear.add_module("fc2", nn.Linear(3072, 2048))
-        self.linear.add_module("bn5", nn.BatchNorm1d(2048))
+        self.linear.add_module("gn5", nn.GroupNorm(8, 2048))  # Changed to GroupNorm
         self.linear.add_module("relu5", nn.ReLU())
 
         self.fc = nn.Linear(2048, 10)
@@ -213,23 +215,23 @@ class FedAvgCNN(nn.Module):
         super().__init__()
         self.conv1 = nn.Sequential(
             nn.Conv2d(in_features,
-                        32,
-                        kernel_size=5,
-                        padding=0,
-                        stride=1,
-                        bias=True),
-            nn.BatchNorm2d(32),
+                      32,
+                      kernel_size=5,
+                      padding=0,
+                      stride=1,
+                      bias=True),
+            nn.GroupNorm(8, 32),  # Changed to GroupNorm
             nn.ReLU(inplace=True), 
             nn.MaxPool2d(kernel_size=(2, 2))
         )
         self.conv2 = nn.Sequential(
             nn.Conv2d(32,
-                        64,
-                        kernel_size=5,
-                        padding=0,
-                        stride=1,
-                        bias=True),
-            nn.BatchNorm2d(64),
+                      64,
+                      kernel_size=5,
+                      padding=0,
+                      stride=1,
+                      bias=True),
+            nn.GroupNorm(8, 64),  # Changed to GroupNorm
             nn.ReLU(inplace=True), 
             nn.MaxPool2d(kernel_size=(2, 2))
         )
@@ -391,9 +393,9 @@ def init_weights(m):
     if classname.find('Conv2d') != -1 or classname.find('ConvTranspose2d') != -1:
         nn.init.kaiming_uniform_(m.weight)
         nn.init.zeros_(m.bias)
-    elif classname.find('BatchNorm') != -1:
-        nn.init.normal_(m.weight, 1.0, 0.02)
-        nn.init.zeros_(m.bias)
+    elif classname.find('GroupNorm') != -1:  # Adjusted for GroupNorm
+        nn.init.ones_(m.weight)  # Setting weight to 1 for GroupNorm
+        nn.init.zeros_(m.bias)   # GroupNorm does not have bias, but we can set it to zero
     elif classname.find('Linear') != -1:
         nn.init.xavier_normal_(m.weight)
         nn.init.zeros_(m.bias)
@@ -411,7 +413,7 @@ class LeNet(nn.Module):
             nn.MaxPool2d(2),
             nn.ReLU(),
         )
-        self.bn = nn.BatchNorm1d(bottleneck_dim, affine=True)
+        self.group_norm = nn.GroupNorm(10, bottleneck_dim)  # Using GroupNorm instead of BatchNorm
         self.dropout = nn.Dropout(p=0.5)
         self.bottleneck = nn.Linear(feature_dim, bottleneck_dim)
         self.bottleneck.apply(init_weights)
@@ -424,7 +426,7 @@ class LeNet(nn.Module):
         x = self.conv_params(x)
         x = x.view(x.size(0), -1)
         x = self.bottleneck(x)
-        x = self.bn(x)
+        x = self.group_norm(x)  # Changed to GroupNorm
         x = self.dropout(x)
         x = self.fc(x)
         x = F.log_softmax(x, dim=1)
