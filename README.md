@@ -68,6 +68,35 @@ or use exp.sh to run multiple exp
 
 ---
 
+#### CUDA版本查詢
+
+* 查cuda版本
+    * `nvidia-smi`
+* 找對應的PyTorch安裝
+    * [PyTorch](https://pytorch.org/get-started/previous-versions/)
+
+requirements.txt裡面的檔案適用於python3.12.0，並且預設安裝的PyTorch版本是不能用GPU訓練的，要自己去找顯卡對應的PyTorch安裝
+
+正常使用顯卡訓練會比較快，可以參考下面的圖片
+
+![](https://i.imgur.com/6uGcJMq.png)
+
+* GPU
+    * 100 global round
+    * 20 clients
+    * Cifar100 (Dir 0.1)
+
+![](https://i.imgur.com/HwTjndu.png)
+
+* GPU
+    * 100 global round
+    * 20 clients
+    * Cifar100 (Dir 1.0)
+
+![](https://i.imgur.com/xX4DgnO.png)
+
+---
+
 #### 特別感謝原始碼提供者 : 鍾明翰 學長 [學長筆記連結](https://hackmd.io/XyJWVGecSRWu4jn0haT8mg)
 #### 2024.10.14 編輯 by 棨翔 [Federated Learning 學長交接討論重點摘要](https://hackmd.io/@qixiang1009/BkubNnkj6)
 
