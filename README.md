@@ -81,6 +81,20 @@ requirements.txt裡面的檔案適用於python3.12.0，並且預設安裝的PyTo
 
 ![](https://i.imgur.com/6uGcJMq.png)
 
+* CPU
+    * 50 global round
+    * 20 clients
+    * Cifar100 (Dir 0.1)
+
+![](https://i.imgur.com/PkKJo9i.png)
+
+* CPU
+    * 50 global round
+    * 20 clients
+    * Cifar100 (Dir 1.0)
+
+![](https://i.imgur.com/PovlhV2.png)
+
 * GPU
     * 100 global round
     * 20 clients
