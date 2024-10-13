@@ -95,7 +95,7 @@ class Server(object):
         # <= mh code
 
     # => mh code
-    def select_poisoned_client(self):
+    '''def select_poisoned_client(self):
         np.random.seed(self.random_seed)
         label_one_clients = []
         for i in range(self.num_clients):
@@ -108,7 +108,28 @@ class Server(object):
         # label_one_clients = [0,4,5,8] #[0,2,4,5,6,8,9]
         poisoned_clients = list(np.random.choice(label_one_clients, int(self.num_clients*self.poisoned_ratio), replace=False))
         # poisoned_clients = list(np.random.choice(np.arange(self.num_clients), 4, replace=False))
+        return poisoned_clients'''
+    
+    def select_poisoned_client(self):
+        np.random.seed(self.random_seed)
+        label_one_clients = []
+        
+        for i in range(self.num_clients):
+            temp = read_client_data(self.dataset, i, is_train=False)
+            
+            for image in temp:
+                if image[1] == 1:
+                    label_one_clients.append(i)
+                    break
+        
+        # 確保可以抽樣的客戶端數量不超過可用客戶端的數量
+        num_poisoned_clients = int(self.num_clients * self.poisoned_ratio)
+        if num_poisoned_clients > len(label_one_clients):
+            num_poisoned_clients = len(label_one_clients)
+
+        poisoned_clients = list(np.random.choice(label_one_clients, num_poisoned_clients, replace=False))
         return poisoned_clients
+
     
     def get_test_data(self):
         batch_size = self.batch_size

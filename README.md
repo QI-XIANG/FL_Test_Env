@@ -69,5 +69,5 @@ or use exp.sh to run multiple exp
 ---
 
 #### 特別感謝原始碼提供者 : 鍾明翰 學長 [學長筆記連結](https://hackmd.io/XyJWVGecSRWu4jn0haT8mg)
-#### 2024.06.28 編輯 by 棨翔 [Federated Learning 學長交接討論重點摘要](https://hackmd.io/@qixiang1009/BkubNnkj6)
+#### 2024.10.14 編輯 by 棨翔 [Federated Learning 學長交接討論重點摘要](https://hackmd.io/@qixiang1009/BkubNnkj6)
 

@@ -1,2 +1,4 @@
 Lib/site-packages/
 dataset/CelebA
+dataset/Cifar100
+dataset/Cifar100_dir1
