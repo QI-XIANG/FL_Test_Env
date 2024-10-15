@@ -70,6 +70,8 @@ def run(args):
                 # args.model = CifarNet(num_classes=args.num_classes).to(args.device)
             elif "Digit5" in args.dataset:
                 args.model = Digit5CNN().to(args.device)
+            elif "CelebA" in args.dataset:
+                args.model = FedAvgCNNMulti(in_features=3, num_classes=40, dim=53824).to(args.device)
             else:
                 args.model = FedAvgCNN(in_features=3, num_classes=args.num_classes, dim=10816).to(args.device)
 
