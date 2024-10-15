@@ -249,6 +249,45 @@ class FedAvgCNN(nn.Module):
         out = self.fc(out)
         return out
 
+class FedAvgCNNMulti(nn.Module):
+    def __init__(self, in_features=3, num_classes=40, dim=64 * 29 * 29):
+        super(FedAvgCNN, self).__init__()
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(in_features, 32, kernel_size=5, padding=0, stride=1, bias=True),
+            nn.GroupNorm(8, 32),  # GroupNorm over 8 groups
+            nn.ReLU(inplace=True), 
+            nn.MaxPool2d(kernel_size=(2, 2))
+        )
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(32, 64, kernel_size=5, padding=0, stride=1, bias=True),
+            nn.GroupNorm(8, 64),
+            nn.ReLU(inplace=True), 
+            nn.MaxPool2d(kernel_size=(2, 2))
+        )
+        
+        # Calculate the correct input dimension for the fully connected layer
+        self.fc1 = nn.Sequential(
+            nn.Linear(dim, 512), 
+            nn.ReLU(inplace=True)
+        )
+        
+        # Output layer for 40 classes, each class representing an attribute
+        self.fc = nn.Linear(512, num_classes)
+
+    def forward(self, x):
+        # Pass through conv layers
+        out = self.conv1(x)
+        out = self.conv2(out)
+        
+        # Flatten the output
+        out = torch.flatten(out, 1)
+        
+        # Fully connected layers
+        out = self.fc1(out)
+        out = self.fc(out)
+        
+        return out
+
 # ====================================================================================================================
 
 # https://github.com/katsura-jp/fedavg.pytorch/blob/master/src/models/mlp.py
